@@ -56,8 +56,7 @@ void LayoutLab (FILE *Archivo,int *Laberinto[],int Dimension){
     ObstaculosRandom(Archivo,Laberinto,ObsRandom,Dimension);
 }
 void Escritura (int *Laberinto[],int Dimension){
-    FILE *ArchivoSalida;
-    ArchivoSalida = fopen("Laberinto.txt","w");
+    FILE *ArchivoSalida = fopen("Laberinto.txt","w");
 
     for(int i=0;i<Dimension;++i){
         for(int j=0;j<Dimension;++j){
