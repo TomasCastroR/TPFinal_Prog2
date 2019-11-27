@@ -20,7 +20,7 @@ int Verificar(int PosX, int PosY,int Dimension, int *Laberinto[]){
 }
 void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dimension){
     int FilaRandom,ColumnaRandom;
-
+    //MEJORAR ESTA GENERACION DE RANDOMS
     srand(time(NULL));
     for(int i=0;i<CantObsRandom;++i){
         FilaRandom = rand()%Dimension;
