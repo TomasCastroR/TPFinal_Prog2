@@ -18,8 +18,14 @@ void LiberarMemoria (int *Array[],int Dimension){
 int Verificar(int PosX, int PosY,int Dimension, int *Laberinto[]){
     return (PosX>0 && PosY>0)&&(PosX<=Dimension&&PosY<=Dimension)&&(Laberinto[PosX-1][PosY-1]=='0');
 }
+void Swapear(int *Matriz[],int Pos,int Dimension,int Tamano,int CantSwapeados){
+    int Swap;
+    Swap=Matriz[(Tamano-1-CantSwapeados)/Dimension][(Tamano-1-CantSwapeados)%Dimension];
+    Matriz[(Tamano-1-CantSwapeados)/Dimension][(Tamano-1-CantSwapeados)%Dimension]=Matriz[Pos/Dimension][Pos%Dimension];
+    Matriz[Pos/Dimension][Pos%Dimension]=Swap;
+}
 void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dimension){
-    int Tamano=Dimension*Dimension;
+    int Tamano=Dimension*Dimension,Pos=0;
     int **PosLibres=(int**)malloc(sizeof(int*)*Dimension);
     for(int i=0;i<Dimension;++i){
         PosLibres[i]=malloc(sizeof(int)*Dimension);
@@ -33,37 +39,43 @@ void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dime
             //printf("%c/%d ",Laberinto[i][j],Laberinto[i][j] == '0');
             if(Laberinto[i][j] == '0'){
                 //printf("SE ROMPE ACA %dAAAA?\n",j);
-                PosLibres[i][j]=0;
+                PosLibres[i][j]=Pos;
             }
             else PosLibres[i][j]=-1;
+            Pos++;
         }
         //printf("\n");
     }
-    /*for(int i=0;i<Dimension;i++){
+    printf("MATRIZ INICIAL\n");
+    for(int i=0;i<Dimension;i++){
         for(int j=0;j<Dimension;j++){
             printf("%d ",PosLibres[i][j]);
         }
         printf("\n");
-    }*/
+    }
     //printf("SE ROMPE ACA 7?\n");
     srand(time(NULL));
-    int i=0,Swap,Random,Ocupadas=0;
+    int i=0,Random,Ocupadas=0,Posicion;
     while(i<CantObsRandom){
         Random = rand()%(Tamano-(i+Ocupadas));
         //printf("%d -- %d -- (%d,%d) -- %d\n",i,Random,(Random/Dimension)+1,(Random%Dimension)+1,Tamano-(i+Ocupadas));
-        if(PosLibres[Random/Dimension][Random%Dimension]==0){
-            Laberinto[Random/Dimension][Random%Dimension]='1';
-            Swap=PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension];
-            PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension]=PosLibres[Random/Dimension][Random%Dimension];
-            PosLibres[Random/Dimension][Random%Dimension]=Swap;
+        if(PosLibres[Random/Dimension][Random%Dimension]!=-1){
+            Posicion=PosLibres[Random/Dimension][Random%Dimension];
+            Laberinto[Posicion/Dimension][Posicion%Dimension]='1';
+            Swapear(PosLibres,Random,Dimension,Tamano,(i+Ocupadas));
             i++;
         }
         else{
-            Swap=PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension];
-            PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension]=PosLibres[Random/Dimension][Random%Dimension];
-            PosLibres[Random/Dimension][Random%Dimension]=Swap;
+            Swapear(PosLibres,Random,Dimension,Tamano,(i+Ocupadas));
             Ocupadas++;
         }
+    }
+    printf("MATRIZ SWAPEADO\n");
+    for(int i=0;i<Dimension;i++){
+        for(int j=0;j<Dimension;j++){
+            printf("%d ",PosLibres[i][j]);
+        }
+        printf("\n");
     }
     //printf("SE ROMPE ACA 8?\n");
     free(PosLibres);
@@ -107,6 +119,7 @@ void Escritura (int *Laberinto[],int Dimension,char NombreSalida[]){
     for(int i=0;i<Dimension;++i){
         for(int j=0;j<Dimension;++j){
             fputc(Laberinto[i][j],ArchivoSalida);
+            fputc(' ',ArchivoSalida);
         }
         fputc('\n',ArchivoSalida);
     }
