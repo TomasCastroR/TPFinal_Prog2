@@ -20,40 +20,52 @@ int Verificar(int PosX, int PosY,int Dimension, int *Laberinto[]){
 }
 void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dimension){
     int Tamano=Dimension*Dimension;
-    int *PosLibres=(int*)malloc(sizeof(int)*Tamano);
-    printf("SE ROMPE ACA 6?\n");
-    for(int i=0;i<Dimension;i++){
-        printf("SE ROMPE ACA %di?\n",i);
-        for(int j=0;j<Dimension;j++){
-            printf("SE ROMPE ACA %dj?\n",j);
-            printf("%c???\n",(Laberinto[i][j]));
-            if(Laberinto[i][j] == '0'){
-                printf("SE ROMPE ACA %dAAAA?\n",j);
-                PosLibres[i+j]=0;
-            }
-            else PosLibres[i+j]=-1;
-        }
+    int **PosLibres=(int**)malloc(sizeof(int*)*Dimension);
+    for(int i=0;i<Dimension;++i){
+        PosLibres[i]=malloc(sizeof(int)*Dimension);
     }
-    printf("SE ROMPE ACA 7?\n");
+    //printf("SE ROMPE ACA 6?\n");
+    for(int i=0;i<Dimension;i++){
+        //printf("SE ROMPE ACA %di?\n",i);
+        for(int j=0;j<Dimension;j++){
+            //printf("SE ROMPE ACA %dj?\n",j);
+            //printf("%c???\n",Laberinto[i][j]);
+            //printf("%c/%d ",Laberinto[i][j],Laberinto[i][j] == '0');
+            if(Laberinto[i][j] == '0'){
+                //printf("SE ROMPE ACA %dAAAA?\n",j);
+                PosLibres[i][j]=0;
+            }
+            else PosLibres[i][j]=-1;
+        }
+        //printf("\n");
+    }
+    /*for(int i=0;i<Dimension;i++){
+        for(int j=0;j<Dimension;j++){
+            printf("%d ",PosLibres[i][j]);
+        }
+        printf("\n");
+    }*/
+    //printf("SE ROMPE ACA 7?\n");
     srand(time(NULL));
     int i=0,Swap,Random,Ocupadas=0;
     while(i<CantObsRandom){
         Random = rand()%(Tamano-(i+Ocupadas));
-        if(PosLibres[Random]==0){
+        //printf("%d -- %d -- (%d,%d) -- %d\n",i,Random,(Random/Dimension)+1,(Random%Dimension)+1,Tamano-(i+Ocupadas));
+        if(PosLibres[Random/Dimension][Random%Dimension]==0){
             Laberinto[Random/Dimension][Random%Dimension]='1';
-            Swap=PosLibres[Tamano-(i+Ocupadas)];
-            PosLibres[Tamano-(i+Ocupadas)]=PosLibres[Random];
-            PosLibres[Random]=Swap;
+            Swap=PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension];
+            PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension]=PosLibres[Random/Dimension][Random%Dimension];
+            PosLibres[Random/Dimension][Random%Dimension]=Swap;
             i++;
         }
         else{
-            Swap=PosLibres[Tamano-(i+Ocupadas)];
-            PosLibres[Tamano-(i+Ocupadas)]=PosLibres[Random];
-            PosLibres[Random]=Swap;
+            Swap=PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension];
+            PosLibres[(Tamano-1-(i+Ocupadas))/Dimension][(Tamano-1-(i+Ocupadas))%Dimension]=PosLibres[Random/Dimension][Random%Dimension];
+            PosLibres[Random/Dimension][Random%Dimension]=Swap;
             Ocupadas++;
         }
     }
-    printf("SE ROMPE ACA 8?\n");
+    //printf("SE ROMPE ACA 8?\n");
     free(PosLibres);
 }
 int LayoutLab (FILE *Archivo,int *Laberinto[],int Dimension){
