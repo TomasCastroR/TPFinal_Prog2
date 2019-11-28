@@ -21,14 +21,20 @@ int Verificar(int PosX, int PosY,int Dimension, int *Laberinto[]){
 void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dimension){
     int Tamano=Dimension*Dimension;
     int *PosLibres=(int*)malloc(sizeof(int)*Tamano);
+    printf("SE ROMPE ACA 6?\n");
     for(int i=0;i<Dimension;i++){
+        printf("SE ROMPE ACA %di?\n",i);
         for(int j=0;j<Dimension;j++){
-            if(Laberinto[i][j]=='0'){
+            printf("SE ROMPE ACA %dj?\n",j);
+            printf("%c???\n",(Laberinto[i][j]));
+            if(Laberinto[i][j] == '0'){
+                printf("SE ROMPE ACA %dAAAA?\n",j);
                 PosLibres[i+j]=0;
             }
             else PosLibres[i+j]=-1;
         }
     }
+    printf("SE ROMPE ACA 7?\n");
     srand(time(NULL));
     int i=0,Swap,Random,Ocupadas=0;
     while(i<CantObsRandom){
@@ -47,6 +53,7 @@ void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dime
             Ocupadas++;
         }
     }
+    printf("SE ROMPE ACA 8?\n");
     free(PosLibres);
 }
 int LayoutLab (FILE *Archivo,int *Laberinto[],int Dimension){
@@ -78,6 +85,7 @@ int LayoutLab (FILE *Archivo,int *Laberinto[],int Dimension){
     if(Verificar(Fila,Columna,Dimension,Laberinto)){
         Laberinto[Fila-1][Columna-1]='X';}
     else Validez=0;
+    fclose(Archivo);
     if(Validez)ObstaculosRandom(Archivo,Laberinto,ObsRandom,Dimension);
     return Validez;
 }
@@ -106,7 +114,6 @@ int main (int Argc,char *Argumentos[]){
 
     InicializarLab(Laberinto,Dimension);
     if(LayoutLab(Entrada,Laberinto,Dimension)){
-        fclose(Entrada);
         Escritura(Laberinto,Dimension,Argumentos[2]);
         LiberarMemoria(Laberinto,Dimension);
     }
