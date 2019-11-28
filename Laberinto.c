@@ -6,14 +6,13 @@
 #define LargoBuffer 100 
 
 void InicializarLab (char *Laberinto[],int Dimension){
-    printf("SE ROMPE ACA AAA\n");
     for(int i=0;i<Dimension;++i){
         Laberinto[i]=malloc(sizeof(int)*Dimension+1);
         Laberinto[0][i]='0';
     }
     Laberinto[0][Dimension]='\0';
     for(int i=1; i<Dimension;++i){
-        strcpy(Laberinto[i],Laberinto[0]);
+        strcpy(Laberinto[i],Laberinto[0]);//ACA SE ROMPE PARA DIMENSION +20000
     }
 }
 
@@ -41,7 +40,7 @@ void ObstaculosRandom (FILE *Archivo,char *Laberinto[],int CantObsRandom,int Dim
     int *PosLibres=(int*)malloc(sizeof(int)*Tamano);
     for(int i=0;i<Dimension;i++){
         for(int j=0;j<Dimension;j++){
-            if(Laberinto[i][j] == '0'){
+            if(Laberinto[i][j] == '0'){//ACA SE ROMPE PARA DIMENSION +20000
                 PosLibres[Pos]=Pos;
             }
             else PosLibres[Pos]=-1;
@@ -82,26 +81,27 @@ int LayoutLab (FILE *Archivo,char *Laberinto[],int Dimension){
         }
         else Validez=0;
     }
-
-    fgets(buffer,100,Archivo);
-    fscanf(Archivo,"%d\n",&ObsRandom);
-    if(ObsRandom>((Dimension*Dimension)-CantObsFijos-2))Validez=0;
-
-    fgets(buffer,100,Archivo);
-    fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);
-    if(Verificar(Fila,Columna,Dimension,Laberinto)){
-        Laberinto[Fila-1][Columna-1]='I';}
-    else Validez=0;
-
-    fgets(buffer,100,Archivo);
-    fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);
-    if(Verificar(Fila,Columna,Dimension,Laberinto)){
-        Laberinto[Fila-1][Columna-1]='X';}
-    else Validez=0;
-
+    if (Validez){
+        fgets(buffer,100,Archivo);
+        fscanf(Archivo,"%d\n",&ObsRandom);
+        if(ObsRandom>((Dimension*Dimension)-CantObsFijos-2))Validez=0;
+        if (Validez){
+            fgets(buffer,100,Archivo);
+            fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);
+            if(Verificar(Fila,Columna,Dimension,Laberinto)){
+            Laberinto[Fila-1][Columna-1]='I';}
+            else Validez=0;
+            if(Validez){
+                fgets(buffer,100,Archivo);
+                fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);
+                if(Verificar(Fila,Columna,Dimension,Laberinto)){
+                Laberinto[Fila-1][Columna-1]='X';}
+                else Validez=0;
+                if(Validez)ObstaculosRandom(Archivo,Laberinto,ObsRandom,Dimension);
+            }
+        }
+    }
     fclose(Archivo);
-    if(Validez)ObstaculosRandom(Archivo,Laberinto,ObsRandom,Dimension);
-
     return Validez;
 }
 void Escritura (char *Laberinto[],int Dimension,char NombreSalida[]){
