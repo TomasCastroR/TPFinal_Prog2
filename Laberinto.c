@@ -46,13 +46,13 @@ void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dime
         }
         //printf("\n");
     }
-    printf("MATRIZ INICIAL\n");
+    /*printf("MATRIZ INICIAL\n");
     for(int i=0;i<Dimension;i++){
         for(int j=0;j<Dimension;j++){
             printf("%d ",PosLibres[i][j]);
         }
         printf("\n");
-    }
+    }*/
     //printf("SE ROMPE ACA 7?\n");
     srand(time(NULL));
     int i=0,Random,Ocupadas=0,Posicion;
@@ -70,13 +70,13 @@ void ObstaculosRandom (FILE *Archivo,int *Laberinto[],int CantObsRandom,int Dime
             Ocupadas++;
         }
     }
-    printf("MATRIZ SWAPEADO\n");
+    /*printf("MATRIZ SWAPEADO\n");
     for(int i=0;i<Dimension;i++){
         for(int j=0;j<Dimension;j++){
             printf("%d ",PosLibres[i][j]);
         }
         printf("\n");
-    }
+    }*/
     //printf("SE ROMPE ACA 8?\n");
     free(PosLibres);
 }
@@ -119,7 +119,6 @@ void Escritura (int *Laberinto[],int Dimension,char NombreSalida[]){
     for(int i=0;i<Dimension;++i){
         for(int j=0;j<Dimension;++j){
             fputc(Laberinto[i][j],ArchivoSalida);
-            fputc(' ',ArchivoSalida);
         }
         fputc('\n',ArchivoSalida);
     }
