@@ -15,7 +15,7 @@ char DeterminarInicializacion(FILE *Archivo){
     }
     fgets(buffer,LargoBuffer,Archivo);
     fscanf(Archivo,"%d\n",&ObsRandom);
-    return (ObsRandom>(((Dimension*Dimension)-ObsFijos)/2));
+    return (ObsRandom>(((Dimension*Dimension)-ObsFijos-2)/2));
 }
 void InicializarLab (char *Laberinto[],int Dimension,int Condicion){
     char Caracter = Condicion +'0';
@@ -73,7 +73,9 @@ void ObstaculosRandom(char *Laberinto[],int CantObsRandom,int CantObsFijos,int D
 int LayoutLab (FILE *Archivo,char *Laberinto[],int Dimension,int Condicion){
     int Validez=1,CantObsFijos=0,Fila,Columna,ObsRandom;
     char Caracter = Condicion +'0',Pared = Condicion + '1',buffer[LargoBuffer];
-    fgets(buffer,100,Archivo);
+
+    fgets(buffer,LargoBuffer,Archivo);
+    printf("%s",buffer);
     while(fgetc(Archivo) == '('&&Validez==1){
         fscanf(Archivo,"%d,%d)\n",&Fila,&Columna);
         if(Verificar(Fila,Columna,Dimension,Laberinto,Caracter)){
@@ -82,47 +84,48 @@ int LayoutLab (FILE *Archivo,char *Laberinto[],int Dimension,int Condicion){
         }
         else Validez=0;
     }
+    printf("%d -- 1\n",Validez);
     if (Validez){
-        fgets(buffer,100,Archivo);
+        fgets(buffer,LargoBuffer,Archivo);
+        printf("%s",buffer);
         fscanf(Archivo,"%d\n",&ObsRandom);
+        printf("%d\n",ObsRandom);
+        printf("%d\n",(Dimension*Dimension)-CantObsFijos-2);
         if(ObsRandom>((Dimension*Dimension)-CantObsFijos-2))Validez=0;
+        printf("%d -- 2\n",Validez);
         if (Validez){
-            fgets(buffer,100,Archivo);
+            fgets(buffer,LargoBuffer,Archivo);
             fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);
             if(Verificar(Fila,Columna,Dimension,Laberinto,Caracter)){
             Laberinto[Fila-1][Columna-1]='I';}
             else Validez=0;
             if(Validez){
-                fgets(buffer,100,Archivo);
+                fgets(buffer,LargoBuffer,Archivo);
                 fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);
                 if(Verificar(Fila,Columna,Dimension,Laberinto,Caracter)){
                 Laberinto[Fila-1][Columna-1]='X';}
                 else Validez=0;
-                if(Validez)ObstaculosRandom(Laberinto,ObsRandom,CantObsFijos,Dimension,Condicion);
+                if(Validez){
+                    ObstaculosRandom(Laberinto,ObsRandom,CantObsFijos,Dimension,Condicion);
+                    int Transformados=0;
+                    for(int i=0;i<Dimension&&Transformados<CantObsFijos;i++){
+                         for(int j=0;j<Dimension&&Transformados<CantObsFijos;j++){
+                            if(Laberinto[i][j]=='2'){
+                                Laberinto[i][j]='1';
+                                Transformados++;}
+                         }
+                    }
+                }
             }
         }
     }
     fclose(Archivo);
     return Validez;
 }
-void Escritura (char *Laberinto[],int Dimension,char NombreSalida[],int Condicion){
+void Escritura (char *Laberinto[],int Dimension,char NombreSalida[]){
     FILE *ArchivoSalida = fopen(NombreSalida,"w");
-    if(Condicion){
-        for(int i=0;i<Dimension;i++){
-            for(int j=0;j<Dimension;j++){
-                if(Laberinto[i][j]=='2'){
-                    Laberinto[i][j]='1';
-                }
-            }
-        }
-        for(int i=0;i<Dimension;++i){
-            fprintf(ArchivoSalida,"%s\n",Laberinto[i]);
-        }
-    }
-    else{
-        for(int i=0;i<Dimension;++i){
-            fprintf(ArchivoSalida,"%s\n",Laberinto[i]);
-        }
+    for(int i=0;i<Dimension;++i){
+        fprintf(ArchivoSalida,"%s\n",Laberinto[i]);
     }
     fclose(ArchivoSalida);
 }
@@ -139,7 +142,7 @@ int main (int Argc,char *Argumentos[]){
     char **Laberinto=(char**)malloc(sizeof(char*)*Dimension);
     InicializarLab(Laberinto,Dimension,Condicion);
     if(LayoutLab(Entrada,Laberinto,Dimension,Condicion)){
-        Escritura(Laberinto,Dimension,Argumentos[2],Condicion);
+        Escritura(Laberinto,Dimension,Argumentos[2]);
         LiberarMemoria(Laberinto,Dimension);
     }
     else{
