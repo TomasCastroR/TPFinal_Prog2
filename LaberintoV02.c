@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define LargoBuffer 100 
-char DeterminarInicializacion(FILE *Archivo){
+int DeterminarInicializacion(FILE *Archivo){
     char buffer[LargoBuffer];
     int Dimension,ObsFijos=0,ObsRandom;
     fscanf(Archivo,"%s\n%d\n",buffer,&Dimension);
@@ -75,7 +75,6 @@ int LayoutLab (FILE *Archivo,char *Laberinto[],int Dimension,int Condicion){
     char Caracter = Condicion +'0',Pared = Condicion + '1',buffer[LargoBuffer];
 
     fgets(buffer,LargoBuffer,Archivo);
-    printf("%s",buffer);
     while(fgetc(Archivo) == '('&&Validez==1){
         fscanf(Archivo,"%d,%d)\n",&Fila,&Columna);
         if(Verificar(Fila,Columna,Dimension,Laberinto,Caracter)){
@@ -84,15 +83,10 @@ int LayoutLab (FILE *Archivo,char *Laberinto[],int Dimension,int Condicion){
         }
         else Validez=0;
     }
-    printf("%d -- 1\n",Validez);
     if (Validez){
         fgets(buffer,LargoBuffer,Archivo);
-        printf("%s",buffer);
         fscanf(Archivo,"%d\n",&ObsRandom);
-        printf("%d\n",ObsRandom);
-        printf("%d\n",(Dimension*Dimension)-CantObsFijos-2);
         if(ObsRandom>((Dimension*Dimension)-CantObsFijos-2))Validez=0;
-        printf("%d -- 2\n",Validez);
         if (Validez){
             fgets(buffer,LargoBuffer,Archivo);
             fscanf(Archivo,"(%d,%d)\n",&Fila,&Columna);

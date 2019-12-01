@@ -1,13 +1,12 @@
 import subprocess
 from math import sqrt
 
-def Encontrar(Laberinto):
+def Encontrar(Laberinto,Dimension):
     Fila=0
     Columna=0
-    Dimension=len(Laberinto)
     Encontrado=0
     while(Fila<Dimension and Encontrado<2):
-        while(Columna<Dimension):
+        while(Columna<Dimension and Encontrado<2):
             if(Laberinto[Fila][Columna]=="I"):
                 Inicio=(Fila,Columna)
                 Encontrado+=1
@@ -34,38 +33,37 @@ def OrdenarPosiciones(ListaPosiciones,Objetivo):
             MenorPos=i
         i+=1
     return ListaPosiciones"""
-def Explorar(Laberinto,Posicion,Objetivo):
-    DicV = [-1,1,0,0]
-    DicH = [0,0,1,-1]
-    Dimension = len(Laberinto)
+def Explorar(Laberinto,Posicion,Dimension):
+    DicV = [1,0,-1,0]
+    DicH = [0,1,0,-1]
     Adyacentes = []
     i=0
     while(i<4):
-        X = Posicion[0]+DicH[i]
-        Y = Posicion[1]+DicV[i]
+        X = Posicion[0]+DicV[i]
+        Y = Posicion[1]+DicH[i]
         if X>=0 and Y>=0 and X<Dimension and Y<Dimension and Laberinto[X][Y]!="1":
             Adyacentes.append((X,Y))
         i+=1
     return Adyacentes
             
-def ResolverLaberinto(Laberinto,Inicio,Objetivo):
+def ResolverLaberinto(Laberinto,Inicio,Dimension):
     Queue = []
     Queue.append([Inicio])
-    Explorados = []
     Solucion = []
     LlegarObjetivo = False
     while(not LlegarObjetivo and Queue!=[]):
-        Path = Queue.pop()
+        Path = Queue.pop(0)
         Nodo = Path[-1]
-        Vecinos = Explorar(Laberinto,Nodo,Objetivo)
-        for Hijo in Vecinos:
-            if Hijo not in Explorados:
-                NewPath = Path + [Hijo]
-                Queue.append(NewPath)
-                if Laberinto[Hijo[0]][Hijo[1]]=="X":
-                    LlegarObjetivo = True
-                    Solucion = NewPath
-        Explorados.append(Nodo)
+        if Laberinto[Nodo[0]][Nodo[1]]!=-1:
+            Vecinos = Explorar(Laberinto,Nodo,Dimension)
+            for Hijo in Vecinos:
+                if Laberinto[Hijo[0]][Hijo[1]]!=-1:
+                    NewPath = Path + [Hijo]
+                    Queue.append(NewPath)
+                    if Laberinto[Hijo[0]][Hijo[1]]=="X":
+                        LlegarObjetivo = True
+                        Solucion = NewPath
+        Laberinto[Nodo[0]][Nodo[1]]=-1
     return Solucion
 def ImprimirSolucion(Solucion):
     for Pasos in Solucion:
@@ -74,7 +72,12 @@ def main():
     Entrada = open("salida.txt","r")
     Laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
     Entrada.close()
-    Salida_Objetivo=Encontrar(Laberinto)
-    Recorrido = ResolverLaberinto(Laberinto,Salida_Objetivo[0],Salida_Objetivo[1])
+    Dimension = len(Laberinto)
+    Salida_Objetivo=Encontrar(Laberinto,Dimension)
+    Recorrido = ResolverLaberinto(Laberinto,Salida_Objetivo[0],Dimension)
+    """while(Recorrido == []):
+        response = subprocess.run(["./a.out","salida.txt"])
+        Salida_Objetivo=Encontrar(Laberinto)
+        Recorrido = ResolverLaberinto(Laberinto,Salida_Objetivo[0])"""
     ImprimirSolucion(Recorrido)
 main()
