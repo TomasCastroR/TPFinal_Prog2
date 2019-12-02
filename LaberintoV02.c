@@ -4,8 +4,8 @@
 #include <string.h>
 
 //Largo del buffer donde almacena la informacion innecesaria
-#define LARGO_BUFFER 100 
-/*determinarInicializacion: FILE -> Bool
+#define LARGO_BUFFER 100
+/*determinarInicializacion: FILE* -> Bool
 Recibe un archivo con el formato de entrada, si la cantidad de obstaculos random es mayor
 a la mitad de casillas disponibles devuelve 1, sino 0*/
 int determinarInicializacion(FILE *archivo){
@@ -50,10 +50,14 @@ devuelve 1 si la posicion esta dentro del laberinto y no es una posicion ya ocup
 int verificar(int posX, int posY,int dimension, char *laberinto[],char caracter){
     return (posX>0 && posY>0)&&(posX<=dimension&&posY<=dimension)&&(laberinto[posX-1][posY-1]==caracter);
 }
-void obstaculosRandom(char **laberinto,int cantObsRandom,int cantObsFijos,int dimension,int condicion,char randomSeed){
+/*obstaculosRandom: char** int int int int char*
+Recibe un laberinto, su dimension, la condicion de seteo, y un numero en forma char array para la srand.
+Si la condicion es 1, coloca '0' (caminos libres)
+Si la condicion es 0, coloca '1 (paredes)'*/
+void obstaculosRandom(char **laberinto,int cantObsRandom,int cantObsFijos,int dimension,int condicion,char *randomSeed){
     int filaRandom,columnaRandom;
     char posLibre = condicion +'0';
-    srand((int)randomSeed);
+    srand(atoi(randomSeed));
     if(condicion){
         int caminosPuestos=0,caminos_a_poner=((dimension*dimension)-cantObsFijos-2)-cantObsRandom;
         while(caminosPuestos<caminos_a_poner){
@@ -82,7 +86,11 @@ void obstaculosRandom(char **laberinto,int cantObsRandom,int cantObsFijos,int di
         }
     }
 }
-int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,char randomSeed){
+/*layoutLaberinto:FILE* char** int int char* -> bool
+Recibe un archivo, un laberinto ya inicializado, su dimension y la condicion.
+A medida que lee el archivo, coloca los obstaculos fijos, la salida y el objetivo. Siempre
+verificando que los datos en la entrada sean validos. En caso de no serlos, devuelve 0*/
+int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,char *randomSeed){
     int validez=1,cantObsFijos=0,fila,columna,obsRandom;
     char caminoLibre = condicion +'0',pared = condicion + '1',buffer[LARGO_BUFFER];
 
@@ -131,6 +139,9 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
     fclose(archivo);
     return validez;
 }
+/*escritura: char** int char*
+Recibe un laberinto, su dimension y el nombre del archivo de salida.
+Escribe en el archivo el laberinto*/
 void escritura (char **laberinto,int dimension,char fileSalida[]){
     FILE *archivoSalida = fopen(fileSalida,"w");
     for(int i=0;i<dimension;++i){
