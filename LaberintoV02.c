@@ -3,7 +3,11 @@
 #include <time.h>
 #include <string.h>
 
+//Largo del buffer donde almacena la informacion innecesaria
 #define LARGO_BUFFER 100 
+/*determinarInicializacion: FILE -> Bool
+Recibe un archivo con el formato de entrada, si la cantidad de obstaculos random es mayor
+a la mitad de casillas disponibles devuelve 1, sino 0*/
 int determinarInicializacion(FILE *archivo){
     char buffer[LARGO_BUFFER];
     int dimension,ObsFijos=0,obsRandom;
@@ -17,6 +21,9 @@ int determinarInicializacion(FILE *archivo){
     fscanf(archivo,"%d\n",&obsRandom);
     return (obsRandom>(((dimension*dimension)-ObsFijos-2)/2));
 }
+/*inicializarLaberinto: char** int int
+Recibe un laberinto, su dimension y la condicion de seteo.
+Si la condicion es 1, inicializa todas las casillas en '1'.Sino, en '0'*/
 void inicializarLaberinto (char **laberinto,int dimension,int condicion){
     char caminoLibre = condicion +'0';
     for(int i=0;i<dimension;++i){
@@ -28,13 +35,18 @@ void inicializarLaberinto (char **laberinto,int dimension,int condicion){
         strcpy(laberinto[i],laberinto[0]);
 }
 }
+/*inicializarLaberinto: char** int
+Recibe una matriz char y su tamaño, libera todos los espacios de memoria
+que aputan cada posicion de la matriz, luego la matriz*/
 void liberarMemoria (char *array[],int dimension){
     for(int i=0;i<dimension;++i){
         free(array[i]);
     }
     free(array);
 }
-
+/*verificar: int int int char** char -> bool
+Recibe una numero de fila, un numero de columna, un laberinto, su tamaño y un caracter que representa espacio libre
+devuelve 1 si la posicion esta dentro del laberinto y no es una posicion ya ocupada*/
 int verificar(int posX, int posY,int dimension, char *laberinto[],char caracter){
     return (posX>0 && posY>0)&&(posX<=dimension&&posY<=dimension)&&(laberinto[posX-1][posY-1]==caracter);
 }
@@ -91,7 +103,8 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
             fgets(buffer,LARGO_BUFFER,archivo);
             fscanf(archivo,"(%d,%d)\n",&fila,&columna);
             if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
-            laberinto[fila-1][columna-1]='I';}
+                laberinto[fila-1][columna-1]='I';
+                }
             else validez=0;
             if(validez){
                 fgets(buffer,LARGO_BUFFER,archivo);
@@ -102,12 +115,14 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
                 if(validez){
                     obstaculosRandom(laberinto,obsRandom,cantObsFijos,dimension,condicion,randomSeed);
                     int Transformados=0;
-                    for(int i=0;i<dimension&&Transformados<cantObsFijos;i++){
-                         for(int j=0;j<dimension&&Transformados<cantObsFijos;j++){
+                    if(condicion){
+                        for(int i=0;i<dimension&&Transformados<cantObsFijos;i++){
+                            for(int j=0;j<dimension&&Transformados<cantObsFijos;j++){
                             if(laberinto[i][j]=='2'){
                                 laberinto[i][j]='1';
                                 Transformados++;}
-                         }
+                            }
+                        }
                     }
                 }
             }
