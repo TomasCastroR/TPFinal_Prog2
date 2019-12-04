@@ -25,10 +25,10 @@ int determinarInicializacion(FILE *archivo){
 Recibe un laberinto, su dimension y la condicion de seteo.
 Si la condicion es 1, inicializa todas las casillas en '1'.Sino, en '0'*/
 void inicializarLaberinto (char **laberinto,int dimension,int condicion){
-    char caminoLibre = condicion +'0';
+    char caracter = condicion +'0';
     for(int i=0;i<dimension;++i){
         laberinto[i]=malloc(sizeof(int)*dimension+1);
-        laberinto[0][i]= caminoLibre;
+        laberinto[0][i]= caracter;
     }
     laberinto[0][dimension]='\0';
     for(int i=1; i<dimension;++i){
@@ -38,23 +38,25 @@ void inicializarLaberinto (char **laberinto,int dimension,int condicion){
 /*inicializarLaberinto: char** int
 Recibe una matriz char y su tamaño, libera todos los espacios de memoria
 que aputan cada posicion de la matriz, luego la matriz*/
-void liberarMemoria (char *array[],int dimension){
+void liberarMemoria (char **array,int dimension){
     for(int i=0;i<dimension;++i){
         free(array[i]);
     }
     free(array);
 }
 /*verificar: int int int char** char -> bool
-Recibe una numero de fila, un numero de columna, un laberinto, su tamaño y un caracter que representa espacio libre
-devuelve 1 si la posicion esta dentro del laberinto y no es una posicion ya ocupada*/
-int verificar(int posX, int posY,int dimension, char *laberinto[],char caracter){
+Recibe una numero de fila, un numero de columna, un laberinto, su tamaño y
+un caracter que representa espacio no ocupado por otro objeto.
+Devuelve 1 si la posicion esta dentro del laberinto y no es una posicion ya ocupada,
+en caso contrario 0*/
+int verificar(int posX, int posY,int dimension, char **laberinto,char caracter){
     return (posX>0 && posY>0)&&(posX<=dimension&&posY<=dimension)&&(laberinto[posX-1][posY-1]==caracter);
 }
 /*obstaculosRandom: char** int int int int char*
 Recibe un laberinto, su dimension, la condicion de seteo, y un numero en forma char array para la srand.
 Si la condicion es 1, coloca '0' (caminos libres)
 Si la condicion es 0, coloca '1 (paredes)'*/
-void obstaculosRandom(char **laberinto,int cantObsRandom,int cantObsFijos,int dimension,int condicion,char *randomSeed){
+void obstaculosRandom(char **laberinto,int dimension,int condicion,int cantObsRandom,int cantObsFijos,char *randomSeed){
     int filaRandom,columnaRandom;
     char posLibre = condicion +'0';
     srand(atoi(randomSeed));
@@ -88,8 +90,9 @@ void obstaculosRandom(char **laberinto,int cantObsRandom,int cantObsFijos,int di
 }
 /*layoutLaberinto:FILE* char** int int char* -> bool
 Recibe un archivo, un laberinto ya inicializado, su dimension y la condicion.
-A medida que lee el archivo, coloca los obstaculos fijos, la salida y el objetivo. Siempre
-verificando que los datos en la entrada sean validos. En caso de no serlos, devuelve 0*/
+A medida que lee el archivo, coloca los obstaculos fijos, que segun la condicion colocara '1' o '2' respectivamente,
+la salida y el objetivo. Siempreverificando que los datos en la entrada sean validos.
+En caso de no serlos, devuelve 0. Sino, 1*/
 int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,char *randomSeed){
     int validez=1,cantObsFijos=0,fila,columna,obsRandom;
     char caminoLibre = condicion +'0',pared = condicion + '1',buffer[LARGO_BUFFER];
@@ -104,10 +107,11 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
         else validez=0;
     }
     if (validez){
+        if(cantObsFijos==0)fgetc(archivo);
         fgets(buffer,LARGO_BUFFER,archivo);
         fscanf(archivo,"%d\n",&obsRandom);
         if(obsRandom>((dimension*dimension)-cantObsFijos-2))validez=0;
-        if (validez){
+        else{
             fgets(buffer,LARGO_BUFFER,archivo);
             fscanf(archivo,"(%d,%d)\n",&fila,&columna);
             if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
@@ -122,13 +126,13 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
                 else validez=0;
                 if(validez){
                     obstaculosRandom(laberinto,obsRandom,cantObsFijos,dimension,condicion,randomSeed);
-                    int Transformados=0;
                     if(condicion){
-                        for(int i=0;i<dimension&&Transformados<cantObsFijos;i++){
-                            for(int j=0;j<dimension&&Transformados<cantObsFijos;j++){
+                        int paredesCambiadas=0;
+                        for(int i=0;i<dimension&&paredesCambiadas<cantObsFijos;i++){
+                            for(int j=0;j<dimension&&paredesCambiadas<cantObsFijos;j++){
                             if(laberinto[i][j]=='2'){
                                 laberinto[i][j]='1';
-                                Transformados++;}
+                                paredesCambiadas++;}
                             }
                         }
                     }

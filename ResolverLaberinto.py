@@ -13,9 +13,9 @@ import random
     El programa comienza generando un numero random que sera la seedrand para el programa en C, luego ejecuta el archivo
     compilado de C pasando como argumenos el archivo de entrada, el nombre del texto de salida y la seedrand."""
     
-""" encontrar: List(List(string)) int -> Tupla(Tupla(int))
-    Recibe un laberinto y su tamaño, devolve en forma de tupla las tuplas con las coordenadas
-    de la salida y el objetivo respectivamente"""
+# encontrar: List[List[string]] int -> Tupla(Tupla(int))
+# Recibe un laberinto y su tamaño, devolve en forma de tupla las tuplas con las coordenadas
+# de la salida y el objetivo respectivamente
 def encontrar(laberinto,dimension):
     fila = 0
     columna = 0
@@ -33,15 +33,14 @@ def encontrar(laberinto,dimension):
         fila+=1
     return (inicio,final)
 
-""" distancia: Tupla(int) Tupla(int) -> int
-    Dado un nodo del laberinto y la posicion del objetivo, devuelve la distancia entre ellos"""
-
+# distancia: Tupla(int) Tupla(int) -> int
+# Dado un nodo del laberinto y la posicion del objetivo, devuelve la distancia entre ellos
 def distancia(nodo,objetivo):
-    return sqrt(pow(objetivo[0]-nodo[0],2)+pow(objetivo[1]-nodo[1],2))
+    return sqrt((objetivo[0]-nodo[0])**2 + (objetivo[1]-nodo[1])**2)
 
-""" ordenarPorDistancia: List(Tupla(int)) Tupla(int)
-    Dada una lista de nodos y la posicion del objetivo, ordena la lista en base a la distancia
-    al objetivo de cada nodo de mayor a menor"""
+# ordenarPorDistancia: List(Tupla(int)) Tupla(int)
+# Dada una lista de nodos y la posicion del objetivo, ordena la lista en base a la distancia
+# al objetivo de cada nodo de mayor a menor
 def ordenarPorDistancia(listaNodos,objetivo):
     listaDistancia = []
     for nodo in listaNodos:
@@ -53,10 +52,10 @@ def ordenarPorDistancia(listaNodos,objetivo):
     for nodo in listaDistancia:
         listaNodos.append((nodo[0],nodo[1]))
 
-""" explorar: List(List(string)) Tupla(int) Tupla(int) int -> List(Tupla(int))
-    Dado un laberinto, las coordenadas nodo del mismo, las coordenadas del objetivo y el tamaño del laberinto,
-    devuelve una lista con los nodos adyacentes que no sean una pared al nodo de entrada ordenados
-    por la distancia al objetivo"""
+# explorar: List(List(string)) Tupla(int) Tupla(int) int -> List(Tupla(int))
+# Dado un laberinto, las coordenadas nodo del mismo, las coordenadas del objetivo y el tamaño del laberinto,
+# devuelve una lista con los nodos adyacentes que no sean una pared al nodo de entrada ordenados
+# por la distancia al objetivo
 def explorar(laberinto,nodo,objetivo,dimension):
     DicV = [1,0,-1,0]
     DicH = [0,1,0,-1]
@@ -71,9 +70,9 @@ def explorar(laberinto,nodo,objetivo,dimension):
     ordenarPorDistancia(Adyacentes,objetivo)
     return Adyacentes
 
-""" resolverLaberinto: List(List(string)) Tupla(int) Tupla(int) int -> List(Tupla(int))
-    Recibe un laberinto, las coordenadas de la salida y del inicio, y la dimension,
-    devuelve una lista de coordenadas en secuencia que representan una solucion del laberinto"""
+# resolverLaberinto: List(List(string)) Tupla(int) Tupla(int) int -> List(Tupla(int))
+# Recibe un laberinto, las coordenadas de la salida y del inicio, y la dimension,
+# devuelve una lista de coordenadas en secuencia que representan una solucion del laberinto
 def resolverLaberinto(laberinto,inicio,objetivo,dimension):
     Stack = []
     Stack.append([inicio])
@@ -94,32 +93,36 @@ def resolverLaberinto(laberinto,inicio,objetivo,dimension):
                         Solucion = newPath
     return Solucion
 
-""" imprimirSolucion: List(Tupla(int))
-    Recibe una solucion del laberinto, imprime la secuencia de coordenadas en pantalla"""
-def imprimirSolucion(Solucion,intentos):
+# imprimirSolucion: List(Tupla(int))
+# Recibe una solucion del laberinto, imprime la secuencia de coordenadas en pantalla
+def imprimirSolucion(Solucion,archivoSolucion,intentos):
+    salida = open(archivoSolucion,"w")
     for pasos in Solucion:
-        print((pasos[0]+1,pasos[1]+1))
+        salida.write("({0},{1})\n".format(pasos[0]+1,pasos[1]+1))
     print(intentos)
 
 def main():
     archivoEntradaC = "entrada.txt"
     archivoLaberinto = "salida.txt"
-    randomSeed = random.randint(-10000,10000)
+    archivoSalida = "solucion.txt"
+    randomSeed = random.randint(0,10000000)
     ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
-    Entrada = open(ejecutar.args[2],"r")
-    laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
-    Entrada.close()
-    dimension = len(laberinto)
-    inicio_fin = encontrar(laberinto,dimension)
-    recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
-    intentos = 0
-    while(recorrido == []):
-        randomSeed = random.randint(-100000,100000)
-        ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
+    #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
+    if(ejecutar.returncode == 0): 
         Entrada = open(ejecutar.args[2],"r")
         laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
         Entrada.close()
+        dimension = len(laberinto)
+        inicio_fin = encontrar(laberinto,dimension)
         recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
-        intentos +=1
-    imprimirSolucion(recorrido,intentos)
+        intentos = 0
+        while(recorrido == []):
+            randomSeed = random.randint(0,10000000)
+            ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
+            Entrada = open(ejecutar.args[2],"r")
+            laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
+            Entrada.close()
+            recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
+            intentos +=1
+        imprimirSolucion(recorrido,archivoSalida,intentos)
 main()
