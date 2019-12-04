@@ -107,11 +107,8 @@ def main():
     archivoLaberinto = "salida.txt"
     archivoSalida = "solucion.txt"
     randomSeed = random.randrange(10000000)
-    print(randomSeed)
-    ejecutar = subprocess.run(["./a.out",archivoEntradaC,archivoLaberinto,str(randomSeed)])
-    print("aaaaaa")
+    ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
-    print(ejecutar.returncode)
     if(ejecutar.returncode == 0):
         Entrada = open(ejecutar.args[2],"r")
         laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
@@ -122,7 +119,7 @@ def main():
         intentos = 0
         while(recorrido == []):
             randomSeed = random.randrange(10000000)
-            ejecutar = subprocess.run(["./a.out",archivoEntradaC,archivoLaberinto,str(randomSeed)])
+            ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
             Entrada = open(ejecutar.args[2],"r")
             laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
             Entrada.close()
