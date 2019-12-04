@@ -36,8 +36,8 @@ void inicializarLaberinto (char **laberinto,int dimension,int condicion){
     }
 }
 /*inicializarLaberinto: char** int
-Recibe una matriz char y su tamaño, libera todos los espacios de memoria
-que aputan cada posicion de la matriz, luego la matriz*/
+Recibe una matriz char y su tamaño, libera el espacio de memoria de cada
+puntero en la matriz, luego libera la matriz*/
 void liberarMemoria (char **array,int dimension){
     for(int i=0;i<dimension;++i){
         free(array[i]);
@@ -54,7 +54,7 @@ int verificar(int posX, int posY,int dimension, char **laberinto,char caracter){
 }
 /*obstaculosRandom: char** int int int int char*
 Recibe un laberinto, su dimension, la condicion de seteo, la cantidad de obstaculos random a poner,
-la cantidad de objetos fijos puestos y un numero en forma char array para la seedrand.
+la cantidad de objetos fijos puestos y un numero en un array char para la seedrand.
 Si la condicion es 1, coloca '0' (caminos libres)
 Si la condicion es 0, coloca '1 (paredes)'*/
 void obstaculosRandom(char **laberinto,int dimension,int condicion,int cantObsRandom,int cantObsFijos,char *randomSeed){
@@ -89,10 +89,11 @@ void obstaculosRandom(char **laberinto,int dimension,int condicion,int cantObsRa
         }
     }
 }
-/*layoutLaberinto:FILE* char** int int char* -> bool
-Recibe un archivo, un laberinto ya inicializado, su dimension y la condicion.
+/*layoutLaberinto: FILE* char** int int char* -> bool
+Recibe un archivo, un laberinto ya inicializado, la condicion en la que se inicializo,
+su dimension y un numero en un array char.
 A medida que lee el archivo, coloca los obstaculos fijos, que segun la condicion colocara '1' o '2' respectivamente,
-la salida y el objetivo. Siempreverificando que los datos en la entrada sean validos.
+la salida y el objetivo. Siempre verificando que los datos en la entrada sean validos.
 En caso de no serlos, devuelve 0. Sino, 1*/
 int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,char *randomSeed){
     int validez=1,cantObsFijos=0,fila,columna,obsRandom;
