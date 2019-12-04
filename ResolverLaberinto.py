@@ -3,16 +3,16 @@ from math import sqrt
 import random
 """ Diseño de datos:
     Representaremos un laberinto como una lista de listas (una matriz) donde cada lista representa
-    una fila y la posicion en esa lista, la columna. Lo que se encuentra en cada casilla del laberinto se representa 
+    una fila y la posicion en esa lista, la columna. Lo que se encuentra en cada casilla del laberinto se representa
     a traves de un caracter string.
 
     Para representar la ubicacion, posicion, coordenadas de una casilla o nodo del laberinto usaremos una dupla (int,int)
     donde el primer elemento representa la fila - 1 y el segundo la columna - 1. Aunque luego, la impresion de la solucion
     las coordenas de los nodos seran a partir que la primer ubicacion es el (1,1)
-    
+
     El programa comienza generando un numero random que sera la seedrand para el programa en C, luego ejecuta el archivo
     compilado de C pasando como argumenos el archivo de entrada, el nombre del texto de salida y la seedrand."""
-    
+
 # encontrar: List[List[string]] int -> Tupla(Tupla(int))
 # Recibe un laberinto y su tamaño, devolve en forma de tupla las tuplas con las coordenadas
 # de la salida y el objetivo respectivamente
@@ -99,16 +99,20 @@ def imprimirSolucion(Solucion,archivoSolucion,intentos):
     salida = open(archivoSolucion,"w")
     for pasos in Solucion:
         salida.write("({0},{1})\n".format(pasos[0]+1,pasos[1]+1))
+    salida.close()
     print(intentos)
 
 def main():
     archivoEntradaC = "entrada.txt"
     archivoLaberinto = "salida.txt"
     archivoSalida = "solucion.txt"
-    randomSeed = random.randint(0,10000000)
-    ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
+    randomSeed = random.randrange(10000000)
+    print(randomSeed)
+    ejecutar = subprocess.run(["./a.out",archivoEntradaC,archivoLaberinto,str(randomSeed)])
+    print("aaaaaa")
     #Pregunta si se genero la salida, en caso que sea False significa que la entrada no era valida
-    if(ejecutar.returncode == 0): 
+    print(ejecutar.returncode)
+    if(ejecutar.returncode == 0):
         Entrada = open(ejecutar.args[2],"r")
         laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
         Entrada.close()
@@ -117,8 +121,8 @@ def main():
         recorrido = resolverLaberinto(laberinto,inicio_fin[0],inicio_fin[1],dimension)
         intentos = 0
         while(recorrido == []):
-            randomSeed = random.randint(0,10000000)
-            ejecutar = subprocess.run(["./a.exe",archivoEntradaC,archivoLaberinto,str(randomSeed)])
+            randomSeed = random.randrange(10000000)
+            ejecutar = subprocess.run(["./a.out",archivoEntradaC,archivoLaberinto,str(randomSeed)])
             Entrada = open(ejecutar.args[2],"r")
             laberinto =list(map(lambda linea:list(linea.strip()),Entrada.readlines()))
             Entrada.close()

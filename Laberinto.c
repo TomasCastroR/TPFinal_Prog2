@@ -76,7 +76,9 @@ void obstaculosRandom(char **laberinto,int dimension,int condicion,int cantObsRa
     else{
         int obsRandomPuestos=0;
         while(obsRandomPuestos<cantObsRandom){
+            printf("AAA -- %d",obsRandomPuestos);
             filaRandom = rand()%dimension;
+            printf("AAA -- %d",obsRandomPuestos);
             columnaRandom = rand()%dimension;
             while(laberinto[filaRandom][columnaRandom]!= posLibre){
                 filaRandom = rand()%dimension;
@@ -107,7 +109,7 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
         else validez=0;
     }
     if (validez){
-        if(cantObsFijos==0)fgetc(archivo);
+        //if(cantObsFijos==0)fgetc(archivo);
         fgets(buffer,LARGO_BUFFER,archivo);
         fscanf(archivo,"%d\n",&obsRandom);
         if(obsRandom>((dimension*dimension)-cantObsFijos-2))validez=0;
@@ -125,7 +127,7 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
                 laberinto[fila-1][columna-1]='X';}
                 else validez=0;
                 if(validez){
-                    obstaculosRandom(laberinto,obsRandom,cantObsFijos,dimension,condicion,randomSeed);
+                    obstaculosRandom(laberinto,dimension,condicion,obsRandom,cantObsFijos,randomSeed);
                     if(condicion){
                         int paredesCambiadas=0;
                         for(int i=0;i<dimension&&paredesCambiadas<cantObsFijos;i++){
@@ -153,18 +155,23 @@ void escritura (char **laberinto,int dimension,char fileSalida[]){
     }
     fclose(archivoSalida);
 }
-int main (int Argc,char **argumentos){
+int main (int Argc,char *argumentos[]){
+    printf("a");
     FILE *Entrada = fopen(argumentos[1],"r");
     int condicion;
+    printf("A");
     condicion = determinarInicializacion(Entrada);
     rewind(Entrada);
+    printf("AA");
     int dimension;
     char buffer[LARGO_BUFFER];
 
     fgets(buffer,LARGO_BUFFER,Entrada);
     fscanf(Entrada,"%d\n",&dimension);
     char **laberinto=(char**)malloc(sizeof(char*)*dimension);
+    printf("AAA");
     inicializarLaberinto(laberinto,dimension,condicion);
+    printf("AAAA");
     if(layoutLaberinto(Entrada,laberinto,dimension,condicion,argumentos[3])){
         escritura(laberinto,dimension,argumentos[2]);
         liberarMemoria(laberinto,dimension);
