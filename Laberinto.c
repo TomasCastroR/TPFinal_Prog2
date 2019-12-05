@@ -27,7 +27,7 @@ Si la condicion es 1, inicializa todas las casillas en '1'.Sino, en '0'*/
 void inicializarLaberinto (char **laberinto,int dimension,int condicion){
     char caracter = condicion +'0';
     for(int i=0;i<dimension;++i){
-        laberinto[i]=malloc(sizeof(int)*dimension+1);
+        laberinto[i]=malloc(sizeof(char)*(dimension+1));
         laberinto[0][i]= caracter;
     }
     laberinto[0][dimension]='\0';
@@ -97,19 +97,18 @@ la salida y el objetivo. Siempre verificando que los datos en la entrada sean va
 En caso de no serlos, devuelve 0. Sino, 1*/
 int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,char *randomSeed){
     int validez=1,cantObsFijos=0,fila,columna,obsRandom;
-    char caminoLibre = condicion +'0',pared = condicion + '1',buffer[LARGO_BUFFER];
+    char caminoLibre = condicion +'0',paredFija = condicion + '1',buffer[LARGO_BUFFER];
 
     fgets(buffer,LARGO_BUFFER,archivo);
     while(fgetc(archivo) == '('&&validez==1){
         fscanf(archivo,"%d,%d)\n",&fila,&columna);
         if(verificar(fila,columna,dimension,laberinto,caminoLibre)){
-            laberinto[fila-1][columna-1]= pared;
+            laberinto[fila-1][columna-1]= paredFija;
             cantObsFijos++;
         }
         else validez=0;
     }
     if (validez){
-        if(cantObsFijos==0)fgetc(archivo);
         fgets(buffer,LARGO_BUFFER,archivo);
         fscanf(archivo,"%d\n",&obsRandom);
         if(obsRandom>((dimension*dimension)-cantObsFijos-2))validez=0;
@@ -147,7 +146,7 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
 }
 /*escritura: char** int char*
 Recibe un laberinto, su dimension y el nombre del archivo de salida.
-Escribe en el archivo el laberinto*/
+Escribe en el archivo el laberinto fila por fila*/
 void escritura (char **laberinto,int dimension,char fileSalida[]){
     FILE *archivoSalida = fopen(fileSalida,"w");
     for(int i=0;i<dimension;++i){
