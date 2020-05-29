@@ -131,9 +131,10 @@ int layoutLaberinto (FILE *archivo,char **laberinto,int dimension,int condicion,
                         int paredesCambiadas=0;
                         for(int i=0;i<dimension&&paredesCambiadas<cantObsFijos;i++){
                             for(int j=0;j<dimension&&paredesCambiadas<cantObsFijos;j++){
-                            if(laberinto[i][j]=='2'){
-                                laberinto[i][j]='1';
-                                paredesCambiadas++;}
+                                if(laberinto[i][j]=='2'){
+                                    laberinto[i][j]='1';
+                                    paredesCambiadas++;
+                                }
                             }
                         }
                     }
